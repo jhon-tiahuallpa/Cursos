@@ -1,0 +1,17 @@
+La primera clase solo nos explico un poco de los temas del curso
+
+
+
+
+
+En la segunda clase nos pidio resolver el examen de entrada: Examen de Entrada.pdf
+Los datos mecionados ahi se describen en el siguiente archivo: Descripción de los datos.pdf
+
+Los datos estaban en el archivo: medfly.txt
+
+La clase empezaba a las 4 y teniamos que enviarlo hasta las 6 de la tarde
+
+
+
+El Ejercicio 1 era para resolverse hasta el lunes y ella resolveria 
+la prueba de entrada y el ejercicio 1 ese dia en la siguiente semana

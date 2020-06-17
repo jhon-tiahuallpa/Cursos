@@ -1,0 +1,345 @@
+---
+title: "Estadística Espacial - Lecture 2"
+author: "Yhon Paúl Tiahuallpa Yucra"
+date: "15/6/2020"
+output: html_document
+---
+
+
+El archivo medfly.txt contiene datos coletados para investigar las migraciónes de la mosca mediterránea de la fruta (la descripción completa de los datos está en el archivo Medfly descripcion.pdf), donde la pregunta de investigación es si la mosca mediterránea de la fruta pasa el invierno en regiones más frias de Israel o migran a lugares más calientes y regresan cuando pasa el invierno.
+
+Ajustar un modelo lineal para predecir el número de moscas atrapadas (A), dependiendo de la localización de la trampa.
+
+ 1. Definir el modelo lineal para responder a la pregunta de la investigación.
+ 2. Estimar los coeficientes de la regresión.
+ 3. Calcular intervalos de confianza de 95% para los coeficientes de la regresión.
+ 4. Calcular el $R^2$ del modelo.
+ 
+Para este ejercicio ustedes tienen que hacer el cálculo en el software R, sin utilizar las funcciónes como lm, glm, etc. Para esto ustedes tienen que definir todas las matrices y vectores relevantes y utilizar las fórmulas que ustedes estudiaron en el curso de modelos lineales. Cómo responderían a la pregunta de la investigación?
+
+
+
+
+
+
+
+Como el valor 
+
+
+Normalmente hacemos transformaciones en la variable explicativa
+
+
+
+
+$$\widehat{Y}_i = 4.76 - 0.306 S_i + 0.00044 Alt_i − 0.0782 Dist_i + 1.64 H_i$$
+
+### Ejercicio 
+
+```{r}
+m <- 3.417 - 2.3028*0 -0.0007046 *200 − 0.0604571 *25 + 0.85069* 1 + 2.287951*0 + 0.0043576 *1+0*200
+m
+#Como la variable es log(1+A)
+exp(1+4.3128)
+```
+
+
+
+
+
+
+
+
+
+
+
+$\sigma^2 =$ Varianza de los errores
+
+
+¿Saben porqué se divide entre $n-p$?
+
+Es importante cuando el numero de observaciones 
+
+para que $\sigma^2$ sea insesgado
+
+Queda como ejercicio
+
+
+
+
+$R^2$, nosotros decimos cuando, es el porcentae de la variable dependiente es muy bajo
+
+$X_j \beta$ es la prediccion de $Y$.
+Si la diferencia entre la media y el predictor es grande 
+
+
+El denominador son las sumas de los 
+
+
+Cuando el $R^2$ es alto, el modelo es bueno
+
+
+
+
+
+
+
+
+```{r}
+medfly <- read.table("./Semana 1-20200610/medfly.txt", header = TRUE, sep = '\t')
+```
+
+
+```{r}
+W1 <- rep(0,89)
+W1[which(medfly$W>=0 & medfly$W<=15)] <- 1
+W1
+
+
+W2 <- rep(0,89)
+W2[which(medfly$W>=15)] <- 1
+W2
+x <- cbind(1, medfly$south, medfly$alt, medfly$dist, medfly$loc_host ,W1,W2, medfly$south*medfly$alt)
+x[1:8,]
+```
+
+
+
+obtenermos el vector de estimadores de beta
+
+
+
+Tenemos 8 variables explicativas
+
+
+por lo que  $n = 89$ y $p = 8$
+
+
+
+
+
+Calcularemos la matriz $(X'X)^{-1}$
+
+```{r}
+
+Y <- log(1 + medfly$A)
+
+(solve(t(x)%*%x))*sigma^2
+```
+
+
+La profesora esta realizando la funcion 'lm' a mano
+
+
+
+
+
+
+
+
+
+¿Cómo obtenemos los resultados de la ultima columna?
+
+
+
+
+
+
+Para el intervalo de confianza de los 
+
+se estandariza 
+
+
+
+
+
+
+
+
+
+
+
+RE
+
+
+
+
+
+Intervalode confianza para loc_host
+
+0.850696
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Modelo de Regresión Lineal: Prueba de Hipotesis
+
+$$H_0: \beta_k = 0$$
+Utilizamos el mismo resultado:
+
+
+$$\widehat{\beta} ∼ \mathcal{N}(\beta, (X' X)^{-1} \sigma^2)$$
+Entonces, rechasamos H 0 si
+( ˆ β k − β k )
+{(X t X) −1 ˆ σ 2 } kk
+≤ −t 1−
+α
+2
+n−p
+o
+( ˆ β k − β k )
+{(X t X) −1 ˆ σ 2 } kk
+≥ t 1−
+α
+2
+n−p
+Para α = 0.05 los valores cr´ıticos son: -1.99 y 1.99
+Por ejemplo para probar H 0 : β k = 0 para el coeficiente de la variable W 1 ,
+el valor de estad´ıstica
+( ˆ β k − β k )
+{(X t X) −1 ˆ σ 2 } kk
+es
+2.29 − 0
+0.716
+= 3.198, y en este
+caso rechasamos H 0 .
+P − valor = 2(1 − P(T (81)>3.198 )) = 0.001973
+Ejercicio: Calcular el p-valor del coeficiente de la variable loc host.
+
+
+
+
+0.0767 - 1.6246
+
+
+
+### Modelo de Regresión Lineal(de Rango Incompleto)
+
+
+$$Y_i = X_i \beta + \epsilon ,  \epsilon \sim \mathcal{N}(0,V)$$ 
+
+Las varianzas de los errores no son iguales, adem´ as los errores no son necesariamente independientes.
+En este caso:
+
+ - $\widehat{\beta} = (X' V^{-1}X)^{-1} X' V^{-1} Y$
+ - $\widehat{\beta} \sim \mathcal{N} (\beta, (X' V^{-1} X)^{-1} )$
+
+
+Modelos con efectos aleatorios
+
+
+
+
+
+
+Conoceremos un modelo de regresion espacial
+
+
+donde las observaciones estan correlacionadas, segun el ejemplo podria verse como que si en una trampa se muestra una alta concentracion de moscas, es probable que en una tramapa cercana (vecina) debe encontrarse ahi
+
+
+
+
+
+
+
+
+```{r}
+#Defnimos W
+W <- matrix(0,89,89)
+
+for (i in 1:88) 
+  {
+  for (j in (i+1):89) 
+    {W[i,j] <- sqrt((medfly$x[i] - medfly$x[j])^2 + (medfly$y[1] - medfly$y[j])^2)
+    W[j,i] <- W[i,j]
+  }
+}
+
+W[1:8,1:8]
+sum(W)
+(89-1)sum
+```
+
+
+Geary C
+```{r}
+suma <- 0
+suma1 <- 0
+for(i in 1:89){
+  for(j in 1:89)
+    suma <- W[i,j]*(Y[i]-Y[j])^2
+  suma1 <- suma1 + suma
+}
+
+suma1
+xx <- mean(Y)
+
+for (k in vector) {
+  
+}
+
+((89-1)*suma1)/(2*sum(W))
+
+
+
+(89-1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+6, 3-0.5*1, 2, 2
+
+
+EU <- matrix(c(6,2, 2, 2))
+EU
+
+EV <- matrix(c(-4, 4+2))
+EV
+
+
+
+
+```
+
+
+

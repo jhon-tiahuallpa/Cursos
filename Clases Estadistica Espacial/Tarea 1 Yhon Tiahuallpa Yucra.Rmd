@@ -1,0 +1,105 @@
+---
+title: "Tarea 1"
+author: "Yhon Paúl Tiahuallpa Yucra"
+date: "10/6/2020"
+output: pdf_document
+---
+
+
+
+
+
+```{r,include=FALSE}
+# <- se coloca con Alt + -
+
+medfly <- read.table("./medfly.txt", header = TRUE, sep = '\t')
+medfly
+```
+
+
+
+
+
+```{r warning=FALSE, include=FALSE}
+which(medfly$W>=0)
+length(which(medfly$W>=0))
+which(medfly$W>=0 & medfly$W<=15)
+
+#Crearemos una nueva variable: W0a15
+W1 <- rep(0,89)
+W1[which(medfly$W>=0 & medfly$W<=15)] <- 1
+W1
+#Ahora esta variable contiene los datos de las semanas de la primera captura
+
+
+#Crearemos otra variable: W15a20
+W2 <- rep(0,89)
+W2[which(medfly$W>15 & medfly$W<=20)] <- 1
+
+W3 <- rep(0,89)
+W3[which(medfly$W>20)] <- 1
+
+```
+
+
+
+
+
+#### 1. Definir todas las variables explicativas que ustedes utilizarán en el modelo.
+
+Las variables explicativas que se proponen en el modelo son:
+
+
+- **x** = La coordenada x de la trampa.
+- **y** = La coordenada x de la trampa.
+
+Pero no se uso ambas variables por separado, sino que se uso una interacción entre la variable **x** y **y**
+
+- **alt** = Altura de la trampa sobre el nivel del mar.
+- **south** = 1 (La trampa se encuentra en la *zona sur*), 0 (otro caso).
+
+Aparte de usar las vaiables por separado se uso su interacción, **x** **y**.
+
+- **dist** =  La distancia de la trampa hasta la región más caliente.
+- **loc_host** = 1 (Si se encuentra un huesped dentro), 0 (otro caso).
+- **A** (Se le realizo una transformación de variable $\log(1 + A)$ = Número de moscas atrapadas en la trampa.
+- **W**  (La cual se separó en 3 categorías) = Semana de la primera captura
+
+  - **W1** = Si la primera captura fue la semana entre **0** a **15**
+  - **W2** = Si la primera captura fue la semana entre **15** a **20**
+  - **W3** = Si la primera captura fue la semana entre **20** a **más**
+  
+#### 2. Definir el modelo de la regresión lineal adecuado para responder a la pregunta de la investigación (tienen que utilizar interacciones en el modelo).
+
+
+
+
+El modelo propuesto:
+
+$$\widehat{Y}_i = 2.132 - 0.04804 *S_i - 0.001277*Alt_i - 0.04559* Dist_i + 0.9240 *Loc\_host_i + 3.552*W1 $$ $$+ 3.863*W2 + 2.685*W3 + 8.962*10^{-11}*(X*Y) + 0.00445*S_i*Alt_i$$
+
+#### 3. Aplicar el modelo (utilizando el software R), definido en el inciso (2) y explicar los resultados obtenidos.
+
+.
+
+
+```{r}
+
+modelo <- lm(log(1+medfly$A) ~ medfly$south + medfly$alt + medfly$dist + medfly$loc_host + 
+               W1 + W2 + W3 + medfly$x*medfly$y + medfly$south*medfly$alt)
+
+
+#Tabla ANVA del modelo
+summary(modelo)
+```
+
+Se obtuvo un $R^2 = 0.5719$. 
+
+
+
+
+
+
+
+
+

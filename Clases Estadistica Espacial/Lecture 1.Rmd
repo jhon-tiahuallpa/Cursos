@@ -1,0 +1,224 @@
+---
+title: "Analisis de los datos de migraciones de la mosca de las frutas"
+author: "Yhon Tiahuallpa"
+date: "10/6/2020"
+output: html_document
+---
+
+## Datos
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Paso 1: Abrir el archivo
+
+Primero debemos leer los datos del archivo medfly.txt
+
+
+```{r}
+# <- se coloca con Alt + -
+
+medfly <- read.table("./Semana 1-20200610/medfly.txt", header = TRUE, sep = '\t')
+```
+
+Vamos a mostrar las 10 primeras filas de la base de datos
+
+
+```{r}
+#Se puede colocar las lineas de codigo con Control + Alt + i
+
+medfly[1:10, ]
+```
+
+
+Mostramos algunas de las variables: "trap" y "A"
+
+```{r}
+#Para mostrar los datos de la variable "trap"
+medfly$trap
+
+```
+
+
+```{r}
+#Para mostrar los datos de la variable "A"
+medfly$A
+
+```
+
+
+
+## Paso 2: Análisis Preliminar
+
+Es necesario hacer un analisis preliminar para encontrar errores en los datos, y además para saber qué tipo de modelo vamos a ajustar a los datos 
+
+#### Variable South
+
+Para lo cual se mostrará un grafico: Histograma 
+
+```{r}
+hist(medfly$south, col = "blue", main = "Variable South")
+```
+
+Aqui podemos ver que la mayoria de las moscas preferian ...
+
+
+```{r}
+plot(density(medfly$alt), col = "blue", lwd = 2, main = "Distribución de la Variable Alt")
+
+range(medfly$alt)
+```
+
+
+
+
+#### Variable Alt
+
+
+
+
+```{r}
+hist(medfly$alt, col = "blue", lwd = 2, main = "Variable Alt")
+```
+
+Observen, que hay una observación con un valor negativo. Si es un error en los datos, esta observación no puede ser utilizada para ajustar un modelo!
+
+En Israel existen lugares que estan debajo del nivel del mar, entonces no es error.
+
+
+
+
+
+
+#### Variable dist
+
+```{r}
+plot(density(medfly$dist), col = "blue", lwd = 2, main = "Distribución de la variable dist")
+
+range(medfly$dist)
+```
+
+
+
+
+
+
+
+```{r}
+hist(medfly$dist, col = "blue", lwd = 2, main = "Variable dist")
+```
+
+
+
+Hay pocas trampas que están a distancia de más de 30 km de las regiones calientes. Esta información puede ser útil cuando ajustamos el modelo o analizamos los resultados
+
+
+
+#### Variable loc host
+
+
+
+```{r}
+hist(medfly$loc_host, col = "blue", main = "variable loc_host")
+```
+
+Esta variable binaria también puede ser utilizada cuando ajustamos un modelo puesto que hay suficientes observaciones con en cada categoría.
+
+
+
+#### Variable A: la variable dependiente
+
+```{r}
+plot(density(medfly$A), col = "blue", lwd = 2, main = "Distribución de la variable A")
+range(medfly$A)
+
+hist(medfly$A, col = "blue", main = "Variable A")
+```
+
+
+Parece que aquí tenemos que hacer una transformación (porqué?)
+
+Porque los datos no se distribucyen como una normal, por lo que se le realiza esa transformación a la variable.
+
+```{r}
+plot(density(log(1 + medfly$A)), col = "blue", lwd = 2, main = "Distribución de la variable log(1 + A)")
+
+range((log(1+medfly$A)))
+
+hist(log(1 + medfly$A), col = "blue", main = "Variable log(1 + A)")
+```
+Entonces vamos a utilizar la variable log(1+A) como la variable dependiente. (Porqué no log(A)?)
+
+
+Veamos:
+
+```{r}
+plot(density(log(medfly$A)), col = "blue", lwd = 2, main = "Distribución de la variable log(A)")
+
+range((log(medfly$A)))
+
+hist(log(medfly$A), col = "blue", main = "Variable log(A)")
+```
+
+Creo que es por el rango que va desde -infinito
+
+
+
+```{r}
+medfly$W
+```
+
+
+## Paso 3: Modelo de Regresi´on Lineal
+
+$$Y_i = X_i \beta + \epsilon_i \;, \qquad \epsilon_i \sim \mathcal{N} (0,\sigma^2)$$
+
+
+#### Modelo lineal: función "lm" de R
+
+
+```{r}
+#Antes de ~ colocamos la variable a predecir y luego de ~ ponemos las variables predictoras
+lm(log(1+medfly$A) ~ medfly$south + medfly$alt + medfly$dist + medfly$loc_host)
+```
+
+
+$$Y_i = X_i \beta + \epsilon_i \;, \qquad \epsilon_i \sim \mathcal{N} (0,\sigma^2)$$
+Si la pregunta de investigación es si la mosca mediterránea de la fruta pasa el invierno en regiones más frias de Israel o migran a lugares más calientes y regresan cuando pasa el invierno, por qué es necesario utilizar todas las variables en el modelo (no solo la variable dist?)?
+
+
+```{r}
+#Antes de ~ colocamos la variable a predecir y luego de ~ ponemos las variables predictoras
+mod <- lm(log(1+medfly$A) ~ medfly$south + medfly$alt + medfly$dist + medfly$loc_host)
+
+
+#para ver la tabla ANVA
+summary(lm(log(1 + medfly$A) ~ medfly$alt + medfly$dist + medfly$loc_host))
+#Es lo mismo
+summary(mod)
+```
+
+$$\widehat{Y}_i = 4.76 - 0.306 S_i + 0.00044 Alt_i − 0.0782 Dist_i + 1.64 H_i$$
+
+
+Ejercicio:
+
+- Escribir el modelo para predicción del número de moscas en las trampas que están localizadas en la parte central de Israel.
+
+- Escribir el modelo para predicción del número de moscas en las trampas que estún localizadas en la parte sur de Israel.
+
+- Cuál sería su predicción del número de moscas atrapadas en una trampa que está en la parte central, en la altura de 200 metros sobre el nivel del mar, 25 km de la región caliente, y donde no se encuentra ningun huesped dentro de 50 metros de la trampa?
+
+
+

@@ -1,0 +1,47 @@
+---
+title: "Estadistica Espacial - Prueba de Entrada"
+author: "Yhon Paúl Tiahuallpa Yucra"
+date: "3/6/2020"
+output: pdf_document
+---
+
+
+
+###  1. Realizar el analisis preliminar de los datos. Explicar los resultados
+```{r setup, include=TRUE}
+
+setwd("C:/Users/Usuario/Desktop")  # directorio de trabajo
+index<-read.table("index.txt",sep="\t",header = T) # archivo, separación y encabezado esta esta separadao por tabulaciones
+```
+
+
+```{r, include=TRUE}
+summary(index[c(4,5,6,7,8,9)])
+```
+
+Podemos ver que:
+
+- El 61.8%  de las trampas se localizan en la parte sur de Israel.
+
+- La altura promedio de las trampas colocadas es de 400 metros sobre el nivel del mar.
+- La altura minima de las trampas es de 284.6 metros bajo el nivel del mar.
+- El 25%  de las trampas tienen una altura menor a 240.6 metros sobre el nivel del mar.
+- El 50%  de las trampas tienen una altura menor a 343.0 metros sobre el nivel del mar.
+- El 75%  de las trampas tienen una altura menor a 570.7 metros sobre el nivel del mar.
+- La altura maxima de una trampa es de 922.4 metros sobre el nivel del mar.
+
+- En el 67.42% de las trampas se encontraró algun huesped dentro.
+
+- Se atrapó en cada trampa un promedio de 433.9 moscas.
+- Se encontraron 5 trampas vacias.
+
+
+
+
+
+
+
+
+
+
+
